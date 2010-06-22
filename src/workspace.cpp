@@ -31,6 +31,8 @@
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xcomposite.h>
+#include <X11/Xatom.h>
+
 //#include <X11/Xmu/WinUtil.h>
 
 #include "workspace.h"
@@ -161,7 +163,7 @@ void Workspace::restack( Client *client, Window above /* the window below client
 {
 	if ( above == None ) {
 		// The window was moved to the bottom of the stacking order
-		mList.remove( client );
+		mList.removeOne( client );
 		mList.append( client );
 	} else {
 		ClientList::Iterator end = mList.end();
@@ -170,7 +172,7 @@ void Workspace::restack( Client *client, Window above /* the window below client
 			if ( (*it)->winId() != above )
 				continue;
 
-			mList.remove( client );
+			mList.removeOne( client );
 			mList.insert( it, client ); // Insert it in front of the current item
 			break;
 		}
@@ -195,7 +197,7 @@ void Workspace::remove( Window id )
 	delete client;
 	*/
 	Client *client = find( id );
-	mList.remove( client );
+	mList.removeOne( client );
 	delete client;
 }
 

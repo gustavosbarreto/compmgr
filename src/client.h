@@ -25,7 +25,8 @@
 #ifndef __CLIENT_H
 #define __CLIENT_H
 
-#include <qrect.h>
+#include <QRect>
+
 #include "workspace.h"
 
 enum ShapeType { WindowOnly, WindowAndBorder, WindowAndShadow, Shadow };
@@ -89,7 +90,7 @@ class Client
 		XRenderPictFormat  *mFormat;
 		Pixmap              mPixmap;
 		Picture             mPicture, mAlphaPict, mShadowPict;
-		Q_UINT32            mOpacity;
+		quint32            mOpacity;
 		Damage              mDamage;
 		QRect               mGeometry;
 		int                 mBorderWidth;

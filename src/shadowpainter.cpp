@@ -30,6 +30,8 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <stdio.h>
+#include <string.h>
 
 #include "shadowpainter.h"
 #include "utils.h"
@@ -121,8 +123,8 @@ void ShadowPainter::draw( Picture dest, const QRect &r, double windowOpacity )
 
 	int lw = (r.width() > size * 2) ? size : r.width() / 2;
 	int th = (r.height() > size * 2) ? size : r.height() / 2;
-	int rw = QMIN( r.width() - lw, size );
-	int bh = QMIN( r.height() - th, size );
+	int rw = qMin( r.width() - lw, size );
+	int bh = qMin( r.height() - th, size );
 	int sx = size - rw; // Only for right column
 	int sy = size - bh; // Only for bottom row
 
@@ -187,8 +189,8 @@ Picture ShadowPainter::createShadow( const QSize &s )
 
 	int lw = (width > size * 2) ? size : width / 2;
 	int th = (height > size * 2) ? size : height / 2;
-	int rw = QMIN( width - lw, size );
-	int bh = QMIN( height - th, size );
+	int rw = qMin( width - lw, size );
+	int bh = qMin( height - th, size );
 	int sx = size - rw; // Only for right column
 	int sy = size - bh; // Only for bottom row
 
@@ -245,11 +247,11 @@ unsigned char ShadowPainter::sum (double *kernel, int x, int y)
 {
 	int center = size / 2;
 
-	int x_start = QMAX( center - x, 0 );
-	int x_end   = QMIN( size + center - x, size );
+	int x_start = qMax( center - x, 0 );
+	int x_end   = qMin( size + center - x, size );
 
-	int y_start = QMAX( center - y, 0 );
-	int y_end   = QMIN( size + center - y, size );
+	int y_start = qMax( center - y, 0 );
+	int y_end   = qMin( size + center - y, size );
 
 	double val = 0;
 	for (int y = y_start; y < y_end; y++) {

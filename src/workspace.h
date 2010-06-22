@@ -25,9 +25,9 @@
 #ifndef __WORKSPACE_H
 #define __WORKSPACE_H
 
-#include <qvaluelist.h>
-#include <qvaluevector.h>
-#include <qobject.h>
+#include <QVector>
+#include <QObject>
+#include <QList>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xdamage.h>
@@ -42,7 +42,7 @@ extern Display *dpy;
 class Workspace
 {
 	public:
-		typedef QValueList< Client * > ClientList;
+		typedef QList< Client * > ClientList;
 
 		static inline Workspace *instance();
 		~Workspace();
@@ -93,7 +93,7 @@ class Workspace
 		Damage mDamage;
 		Picture mBackbuffer, mFrontbuffer;
 		Picture mRootTile;
-		QValueVector< XRectangle > mExposeRects;
+		QVector< XRectangle > mExposeRects;
 		bool mUpdatePending:1;
 		bool mWaitForClients:1;
 		bool mInitialRepaint:1;

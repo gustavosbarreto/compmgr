@@ -210,7 +210,7 @@ QRect Client::geometry( ShapeType type ) const
 
 		case Shadow:
 			r = ShadowPainter::shadowGeometry( geometry( WindowAndBorder ) );
-			r.moveBy( (x() - r.x()) / 4, (y() - r.y()) / 3 );
+//            r.moveTo(QPoint((x() - r.x()) / 4, (y() - r.y()) / 3 ));
 			break;
 
 		case WindowAndShadow:
