@@ -156,22 +156,25 @@ Client *Workspace::find( Window id ) const
 
 void Workspace::restack( Client *client, Window above /* the window below client */)
 {
-	if ( above == None ) {
-		// The window was moved to the bottom of the stacking order
-		mList.removeOne( client );
-		mList.append( client );
-	} else {
-		ClientList::Iterator end = mList.end();
-		for ( ClientList::Iterator it = mList.begin(); it != end; ++it )
-		{
-			if ( (*it)->winId() != above )
-				continue;
+    QMutableLinkedListIterator<Client *> i(mList);
+    if (i.findNext(client))
+        i.remove();
 
-			mList.removeOne( client );
-			mList.insert( it, client ); // Insert it in front of the current item
-			break;
-		}
-	}
+	if ( above != None ) {
+        i.toBack();
+
+        while (i.hasPrevious())
+        {
+            if (i.previous()->winId() == above)
+            {
+                i.insert(client);
+                break;
+            }
+        }
+
+    } else {
+        mList.append(client);
+    }
 }
 
 

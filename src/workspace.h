@@ -27,7 +27,7 @@
 
 #include <QVector>
 #include <QObject>
-#include <QList>
+#include <QLinkedList>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xdamage.h>
@@ -42,7 +42,7 @@ extern Display *dpy;
 class Workspace
 {
 	public:
-		typedef QList< Client * > ClientList;
+		typedef QLinkedList< Client * > ClientList;
 
 		static inline Workspace *instance();
 		~Workspace();
