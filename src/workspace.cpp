@@ -36,7 +36,6 @@
 //#include <X11/Xmu/WinUtil.h>
 
 #include "workspace.h"
-#include "shadowpainter.h"
 #include "client.h"
 #include "utils.h"
 
@@ -106,10 +105,6 @@ Workspace::Workspace() : mDamage( None ), mWaitForClients( false ), mInitialRepa
 
 	XFree( windows );
 	XUngrabServer( dpy );
-
-	// Initialize the shadow settings
-	ShadowPainter::setShadowRadius( 6.0 );
-	ShadowPainter::setShadowOpacity( .33 );
 
 	// Get the picture format for the root window
 	mFormat = XRenderFindVisualFormat( dpy, visual() );
@@ -348,14 +343,6 @@ void Workspace::repaint()
 		// Restore the previously saved clip region
 		XFixesSetPictureClipRegion( dpy, backBuffer(), 0, 0, client->shapeClip() );
 
-		// Draw a drop shadow if the window doesn't have an alpha channel
-		if ( !client->hasAlphaChannel() ) {
-				//ShadowPainter::drawShadow( backBuffer(), client->geometry( Shadow ),
-				//						   client->opacity() );
-				ShadowPainter::drawShadowPicture( backBuffer(), client->geometry( Shadow ),
-												  client->shadow(), client->opacity() );
-		}
-
 		// Only draw the window if it's translucent
 		// (we drew the opaque ones in the previous loop)
 		if ( !client->isOpaque() )
@@ -500,7 +487,7 @@ void Workspace::damageNotifyEvent( const XDamageNotifyEvent *event )
 	if ( !client->isPainted() ) {
 		// If the window has been painted for the first time, mark the whole
 		// window as damaged.
-		parts = client->createRegion( WindowAndShadow );
+		parts = client->createRegion( WindowAndBorder );
 		XDamageSubtract( dpy, client->damageHandle(), None, None );
 		client->setPainted( true );
 	} else {

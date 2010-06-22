@@ -1,4 +1,4 @@
 LIBS += -lXcomposite -lXrender -lXdamage
 
-HEADERS += client.h main.h shadowpainter.h utils.h workspace.h
-SOURCES += client.cpp main.cpp shadowpainter.cpp workspace.cpp
+HEADERS += client.h main.h utils.h workspace.h
+SOURCES += client.cpp main.cpp workspace.cpp

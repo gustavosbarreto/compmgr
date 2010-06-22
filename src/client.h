@@ -29,7 +29,7 @@
 
 #include "workspace.h"
 
-enum ShapeType { WindowOnly, WindowAndBorder, WindowAndShadow, Shadow };
+enum ShapeType { WindowOnly, WindowAndBorder };
 
 class Client
 {
@@ -45,7 +45,6 @@ class Client
 		Window winId() const { return mId; }
 		Damage damageHandle() const { return mDamage; }
 		Picture picture();
-		Picture shadow();
 
 		XserverRegion createRegion( ShapeType type ) const;
 
@@ -82,14 +81,13 @@ class Client
 
 	private:
 		void createWindowPicture();
-		void createShadowPicture();
 		void createOpacityMask();
 		ulong getWindowOpacity() const;
 
 		Window              mId;
 		XRenderPictFormat  *mFormat;
 		Pixmap              mPixmap;
-		Picture             mPicture, mAlphaPict, mShadowPict;
+        Picture             mPicture, mAlphaPict;
 		quint32            mOpacity;
 		Damage              mDamage;
 		QRect               mGeometry;
@@ -130,16 +128,6 @@ inline Picture Client::picture()
 
 	return mPicture;
 }
-
-
-inline Picture Client::shadow()
-{
-	if ( !mShadowPict )
-		createShadowPicture();
-
-	return mShadowPict;
-}
-
 
 inline Picture Client::alphaMask()
 {

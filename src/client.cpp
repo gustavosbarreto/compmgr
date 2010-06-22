@@ -27,7 +27,6 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/Xcomposite.h>
 
-#include "shadowpainter.h"
 #include "utils.h"
 
 #include <iostream>
@@ -42,7 +41,6 @@ Client::Client( Window win, const XWindowAttributes &attr )
 	  mPixmap( None ),
 	  mPicture( None ),
 	  mAlphaPict( None ),
-	  mShadowPict( None ),
 	  mOpacity( 0xffffffff ),
 	  mDamage( None ),
 	  mGeometry( 0, 0, 0, 0 ),
@@ -91,7 +89,6 @@ Client::~Client()
 	releasePixmap( mPixmap );
 	releasePicture( mPicture );
 	releasePicture( mAlphaPict );
-	releasePicture( mShadowPict );
 
 	if ( mDamage )
 		XDamageDestroy( dpy, mDamage );
@@ -109,15 +106,6 @@ void Client::createWindowPicture()
 	mPicture = XRenderCreatePicture( dpy, mPixmap, mFormat, 0, 0 );
 }
 
-
-// Creates the shadow picture
-void Client::createShadowPicture()
-{
-	QRect r = geometry( Shadow );
-	mShadowPict = ShadowPainter::createShadowPicture( r.size() );
-}
-
-
 // This function gets called when the window geometry is changed.
 void Client::geometryChanged( const QRect &newGeometry, int newBorderWidth )
 {
@@ -131,7 +119,6 @@ void Client::geometryChanged( const QRect &newGeometry, int newBorderWidth )
 		// Deref the now stale backing pixmap, and free the picture
 		releasePixmap( mPixmap );
 		releasePicture( mPicture );
-		releasePicture( mShadowPict );
 
 		mSourceClipValid = false;
 	}
@@ -148,7 +135,7 @@ void Client::geometryChanged( const QRect &newGeometry, int newBorderWidth )
 		XFixesCopyRegion( dpy, damage, mVisibleRegion );
 
 	// Create a region with the new geometry, and union it with the old
-	XserverRegion region = createRegion( WindowAndShadow );
+	XserverRegion region = createRegion( WindowAndBorder );
 	XFixesUnionRegion( dpy, damage, damage, region );
 	XFixesDestroyRegion( dpy, region );
 
@@ -192,7 +179,7 @@ void Client::opacityChanged()
 	}
 
 	// When the opacity is changed the whole window needs to be redrawn
-	XserverRegion extents = createRegion( WindowAndShadow );
+	XserverRegion extents = createRegion( WindowAndBorder );
 	Workspace::instance()->addDamage( extents );
 }
 
@@ -206,15 +193,6 @@ QRect Client::geometry( ShapeType type ) const
 	{
 		case WindowAndBorder:
 			r = QRect( x(), y(), width() + borderWidth() * 2, height() + borderWidth() * 2 );
-			break;
-
-		case Shadow:
-			r = ShadowPainter::shadowGeometry( geometry( WindowAndBorder ) );
-//            r.moveTo(QPoint((x() - r.x()) / 4, (y() - r.y()) / 3 ));
-			break;
-
-		case WindowAndShadow:
-			r = geometry( Shadow ) | geometry( WindowAndBorder );
 			break;
 
 		case WindowOnly:
@@ -272,7 +250,7 @@ void Client::updateOnScreenRegion()
 	if ( mVisibleRegion != None )
 		XFixesDestroyRegion( dpy, mVisibleRegion );
 
-	mVisibleRegion = createRegion( WindowAndShadow );
+	mVisibleRegion = createRegion( WindowAndBorder );
 }
 
 
@@ -302,7 +280,6 @@ void Client::hide()
 
 	releasePixmap( mPixmap );      // Deref the backing pixmap
 	releasePicture( mPicture );    // Free the window picture
-	releasePicture( mShadowPict ); // Free the shadow picture
 	releasePicture( mAlphaPict );  // Free the opacity mask
 	
 	// Stop listening for EWMH changes
