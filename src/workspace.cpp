@@ -28,6 +28,7 @@
 #include <qwindowdefs.h>
 #include <qrect.h>
 #include <qtimer.h>
+#include <qdebug.h>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xcomposite.h>
@@ -38,6 +39,7 @@
 #include "workspace.h"
 #include "client.h"
 #include "utils.h"
+#include "debug.h"
 
 #include <iostream>
 
@@ -584,6 +586,9 @@ bool Workspace::x11Event( XEvent *event )
 {
 	//bool dumpWindows = false;
 	//bool reportNextUpdate = false;
+
+    static int debugs = 0;
+    qDebug() << ++debugs << __PRETTY_FUNCTION__ << "got event" << eventName(event->type);
 
 	switch ( event->type ) {
 		case CreateNotify:
