@@ -1,8 +1,0 @@
-AUTOMAKE_OPTIONS = foreign 1.5
-EXTRA_DIST = admin
-
-dist-hook:
-	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
-
-include admin/deps.am
-
