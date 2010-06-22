@@ -43,6 +43,22 @@ static int error( Display *, XErrorEvent * )
 	return 0;
 }
 
+static void register_cm()
+{
+    Window w;
+    Atom a;
+
+    w = XCreateSimpleWindow (dpy, RootWindow (dpy, 0), 0, 0, 1, 1, 0, None,
+			     None);
+
+    Xutf8SetWMProperties (dpy, w, "xcompmgr", "xcompmgr", NULL, 0, NULL, NULL,
+			  NULL);
+
+    a = XInternAtom (dpy, "_NET_WM_CM_S0", False);
+
+    XSetSelectionOwner (dpy, a, w, 0);
+}
+
 int main(/* int argc, char **argv*/)
 {
 	dpy = XOpenDisplay( 0 );
@@ -72,6 +88,9 @@ int main(/* int argc, char **argv*/)
 		*atoms[i] = atoms_return[i];	
 
 	XSetErrorHandler (error);
+
+	register_cm();
+
 	Workspace *workspace = Workspace::instance();
 
 	while (true)
