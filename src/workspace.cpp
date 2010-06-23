@@ -64,29 +64,13 @@ Workspace::Workspace() : mDamage( None ), mWaitForClients( false ), mInitialRepa
 	// Redirect all toplevel window contents to offscreen storage
 	XCompositeRedirectSubwindows( dpy, rootId(), CompositeRedirectManual );
 
+    initClientList();
+
 	// Request notification about toplevel window state changes
 	XSelectInput( dpy, rootId(),
 			SubstructureNotifyMask | ExposureMask |
 			StructureNotifyMask | PropertyChangeMask );
 
-	// Get a list of all toplevel windows from the X server, sorted bottom to top
-	uint nwindows;
-	Window root_return, parent_return, *windows;
-	XQueryTree( dpy, rootId(), &root_return,
-			&parent_return, &windows, &nwindows );
-
-	// Create a client object for each window and insert it into the window
-	// list, which is sorted top to bottom. (the opposite of the order returned
-	// by XQueryTree()).
-	for ( uint i = 0; i < nwindows; i++ ) {
-		XWindowAttributes attr;
-		if ( !XGetWindowAttributes( dpy, windows[i], &attr ) )
-			continue;
-
-		mList.prepend( new Client( windows[i], attr ) );
-	}
-
-	XFree( windows );
 	XUngrabServer( dpy );
 
 	// Get the picture format for the root window
@@ -99,7 +83,7 @@ Workspace::Workspace() : mDamage( None ), mWaitForClients( false ), mInitialRepa
 
 	createBackbuffer();
 
-	mWaitForClients = true;
+  	mWaitForClients = true;
 	XSync( dpy, false );
 }
 
@@ -160,6 +144,27 @@ void Workspace::restack( Client *client, Window above /* the window below client
     }
 }
 
+void Workspace::initClientList()
+{
+	// Get a list of all toplevel windows from the X server, sorted bottom to top
+	uint nwindows;
+	Window root_return, parent_return, *windows;
+	XQueryTree( dpy, rootId(), &root_return,
+			&parent_return, &windows, &nwindows );
+
+	// Create a client object for each window and insert it into the window
+	// list, which is sorted top to bottom. (the opposite of the order returned
+	// by XQueryTree()).
+	for ( uint i = 0; i < nwindows; i++ ) {
+		XWindowAttributes attr;
+		if ( !XGetWindowAttributes( dpy, windows[i], &attr ) )
+			continue;
+
+		mList.prepend( new Client( windows[i], attr ) );
+	}
+
+	XFree( windows );
+}
 
 void Workspace::remove( Window id )
 {

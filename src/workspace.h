@@ -82,6 +82,7 @@ class Workspace
 	private:
 		Workspace();
 		void restack( Client *, Window );
+    void initClientList();
 
 	private:
 		static Workspace *sInst;
