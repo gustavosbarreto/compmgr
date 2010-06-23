@@ -40,6 +40,7 @@
 #include "client.h"
 #include "utils.h"
 #include "debug.h"
+#include "extensions.h"
 
 #include <iostream>
 
@@ -56,27 +57,7 @@ extern Display *dpy;
 
 Workspace::Workspace() : mDamage( None ), mWaitForClients( false ), mInitialRepaint( true )
 {
-	int event_base, error_base;
-
-	if ( !XShapeQueryExtension( dpy, &mShapeBase, &error_base ) ) {
-		//::exit( 0 );
-	}
-
-	if ( !XRenderQueryExtension( dpy, &event_base, &error_base ) ) {
-	}
-
-	// Check for all needed extensions
-	if ( !XCompositeQueryExtension( dpy, &event_base, &error_base ) ) {
-		//::exit( 0 );
-	}
-
-	if ( !XDamageQueryExtension( dpy, &mDamageBase, &error_base ) ) {
-		//::exit( 0 );
-	}
-
-	if ( !XFixesQueryExtension( dpy, &event_base, &error_base ) ) {
-		//::exit( 0 );
-	}
+    Extensions::initialize();
 
 	XGrabServer( dpy );
 
@@ -641,10 +622,10 @@ bool Workspace::x11Event( XEvent *event )
 			break;
 
 		default:
-			if ( event->type == mDamageBase + XDamageNotify )
+			if ( event->type == Extensions::damageEvent(XDamageNotify) )
 				damageNotifyEvent( reinterpret_cast< XDamageNotifyEvent * >( event ) );
 			
-			else if ( event->type == mShapeBase + ShapeNotify )
+			else if ( event->type == Extensions::shapeEvent(ShapeNotify ))
 				shapeNotifyEvent( reinterpret_cast< XShapeEvent * >( event ) );
 	}
 
