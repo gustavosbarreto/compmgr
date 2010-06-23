@@ -28,11 +28,11 @@
 #include <X11/extensions/Xcomposite.h>
 
 #include "utils.h"
+#include "atoms.h"
 
 #include <iostream>
 
 // Declared and interned in main.cpp
-extern Atom net_wm_window_opacity;
 extern Display *dpy;
 
 
@@ -305,7 +305,7 @@ ulong Client::getWindowOpacity() const
 	uchar *data = 0L;
 	int result;
 
-	result = XGetWindowProperty( dpy, winId(), net_wm_window_opacity, 0, 1,
+	result = XGetWindowProperty( dpy, winId(), ATOM(_NET_WM_WINDOW_OPACITY), 0, 1,
 				false, XA_CARDINAL, &actual, &format, &nitems, &left, &data );
 
 	if ( result == Success && actual == XA_CARDINAL && format == 32

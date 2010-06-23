@@ -26,15 +26,9 @@
 
 #include "main.h"
 #include "workspace.h"
+#include "atoms.h"
 
 #include <X11/Xlib.h>
-
-Atom net_wm_window_opacity;
-Atom net_current_desktop;
-
-Atom xa_xrootpmap_id;
-Atom xa_xsetroot_id;
-Atom xa_esetroot_pmap_id;
 
 Display *dpy;
 
@@ -63,29 +57,7 @@ int main(/* int argc, char **argv*/)
 {
 	dpy = XOpenDisplay( 0 );
 
-	const char *names[5];
-	Atom atoms_return[5];
-	Atom *atoms[5];
-	int n = 0;
-
-	names[n]   = "_NET_WM_WINDOW_OPACITY";
-	atoms[n++] = &net_wm_window_opacity;
-
-	names[n]   = "_NET_CURRENT_DESKTOP";
-	atoms[n++] = &net_current_desktop;
-
-	names[n]   = "_XROOTPMAP_ID";
-	atoms[n++] = &xa_xrootpmap_id;
-
-	names[n]   = "ESETROOT_PMAP_ID";
-	atoms[n++] = &xa_esetroot_pmap_id;
-
-	names[n]   = "_XSETROOT_ID";
-	atoms[n++] = &xa_xsetroot_id;
-
-	XInternAtoms( dpy, (char**)names, n, false, atoms_return );
-	for ( int i = 0; i < n; i++ )
-		*atoms[i] = atoms_return[i];	
+    ::createAtomList();
 
 	XSetErrorHandler (error);
 

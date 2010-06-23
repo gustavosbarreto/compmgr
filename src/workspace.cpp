@@ -41,17 +41,11 @@
 #include "utils.h"
 #include "debug.h"
 #include "extensions.h"
+#include "atoms.h"
 
 #include <iostream>
 
 Workspace *Workspace::sInst = NULL;
-
-// Declared and interned in main.cpp
-extern Atom net_wm_window_opacity;
-extern Atom net_current_desktop;
-extern Atom xa_esetroot_pmap_id;
-extern Atom xa_xrootpmap_id;
-extern Atom xa_xsetroot_id;
 
 extern Display *dpy;
 
@@ -210,7 +204,7 @@ void Workspace::createRootTile()
 	uchar *data = 0L;
 
 	// Try to find a root window property with a pixmap ID for a background pixmap.
-	Atom atoms[] = { xa_esetroot_pmap_id, xa_xrootpmap_id, xa_xsetroot_id };
+	Atom atoms[] = { ATOM(ESETROOT_PMAP_ID), ATOM(_XROOTPMAP_ID), ATOM(_XSETROOT_ID) };
 	for (int i = 0; i < 3; i++ )
 	{
 		int result = XGetWindowProperty( dpy, rootId(), atoms[i], 0, 4, false, XA_PIXMAP,
@@ -500,7 +494,7 @@ void Workspace::damageNotifyEvent( const XDamageNotifyEvent *event )
 static Bool windowOpacityPredicate( Display *, XEvent *event, XPointer arg )
 {
 	if ( event->type == PropertyNotify
-			&& event->xproperty.atom == net_wm_window_opacity
+         && event->xproperty.atom == ATOM(_NET_WM_WINDOW_OPACITY)
 			&& event->xproperty.window == Window( arg ) )
 		return True;
 
@@ -510,9 +504,9 @@ static Bool windowOpacityPredicate( Display *, XEvent *event, XPointer arg )
 static Bool rootPixmapPredicate( Display *, XEvent *event, XPointer arg )
 {
 	if ( event->type == PropertyNotify && event->xproperty.window == Window( arg ) &&
-			( event->xproperty.atom == xa_xrootpmap_id ||
-			  event->xproperty.atom == xa_xsetroot_id  ||
-			  event->xproperty.atom == xa_esetroot_pmap_id ) )
+         ( event->xproperty.atom == ATOM(_XROOTPMAP_ID) ||
+           event->xproperty.atom == ATOM(_XSETROOT_ID)  ||
+           event->xproperty.atom == ATOM(ESETROOT_PMAP_ID) ) )
 		return True;
 
 	return False;
@@ -529,16 +523,16 @@ void Workspace::propertyNotifyEvent( const XPropertyEvent *event )
 	if ( event->window == rootId() ) {
 		// Major optimization when switching desktops; we'll block updates and just
 		// let damage accumulate until all newly mapped windows have been painted.
-		if ( event->atom == net_current_desktop )
+		if ( event->atom == ATOM(_NET_CURRENT_DESKTOP) )
 		{
 			mWaitForClients = true;
 			XSync( dpy, false ); // Helps to accumulate more events
 		}
 
 		// If the root window pixmap was changed
-		else if ( event->atom == xa_xrootpmap_id ||
-		          event->atom == xa_xsetroot_id  ||
-		          event->atom == xa_esetroot_pmap_id )
+		else if ( event->atom == ATOM(_XROOTPMAP_ID) ||
+		          event->atom == ATOM(_XSETROOT_ID)  ||
+		          event->atom == ATOM(ESETROOT_PMAP_ID) )
 		{
 			// Compress these events
 			XEvent dummy;
@@ -554,7 +548,7 @@ void Workspace::propertyNotifyEvent( const XPropertyEvent *event )
 	}
 
 	// Handle notifications of changes to window opacity hints
-	else if ( event->atom == net_wm_window_opacity )
+	else if ( event->atom == ATOM(_NET_WM_WINDOW_OPACITY))
 	{
 		// Compress opacity change events for the window
 		XEvent dummy;
