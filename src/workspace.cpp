@@ -83,7 +83,6 @@ Workspace::Workspace() : mDamage( None ), mWaitForClients( false ), mInitialRepa
 
 	createBackbuffer();
 
-  	mWaitForClients = true;
 	XSync( dpy, false );
 }
 
