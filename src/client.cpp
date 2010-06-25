@@ -323,11 +323,11 @@ ulong Client::getWindowOpacity() const
 void Client::createOpacityMask()
 {
     XRenderPictFormat *format = XRenderFindStandardFormat( dpy,
-							   isOpaque() ? PictStandardARGB32 : PictStandardA8 );
+							   !isOpaque() ? PictStandardARGB32 : PictStandardA8 );
 	XRenderPictureAttributes pa;
 	pa.repeat = true;
 
-	Pixmap pixmap = XCreatePixmap( dpy, DefaultRootWindow( dpy ), 1, 1, isOpaque() ? 32 : 8 );
+	Pixmap pixmap = XCreatePixmap( dpy, DefaultRootWindow( dpy ), 1, 1, !isOpaque() ? 32 : 8 );
 	mAlphaPict = XRenderCreatePicture( dpy, pixmap, format, CPRepeat, &pa );
 	XFreePixmap( dpy, pixmap );
 
