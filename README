@@ -1,3 +1,11 @@
 My experiment with X Composite Manager based on compmgr from Fredrik Höglund (fredrik@kde.org).
 
+Installing:
+qmake PREFIX=/usr
+make
+make install
+
+Running:
+/usr/bin/compmgr
+
 Original source code: http://ktown.kde.org/~fredrik/compmgr.tar.bz2
